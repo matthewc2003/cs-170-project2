@@ -21,7 +21,7 @@ class NNClassifier:
 
         return predicted_label
 
-class Validator():
+class Validator:
     def __init__(self, classifier):
         self.classifier = classifier
 
@@ -29,8 +29,13 @@ class Validator():
         correct_predictions = 0
         total_instances = len(dataset)
 
+        total_training_time = 0
+        total_testing_time = 0
+
         start_time = time.time()
         for i in range(total_instances):
+            iteration_start = time.time()  # Start time for the iteration
+
             test_instance = dataset[i]
             training_data = [dataset[j] for j in range(total_instances) if j != i]
 
@@ -43,24 +48,45 @@ class Validator():
                 filtered_training_data = training_data
                 filtered_test_features = test_instance[0]
 
+            # Measure training time
+            training_start = time.time()
             self.classifier.train(filtered_training_data)
+            training_end = time.time()
+            iteration_training_time = training_end - training_start
+            total_training_time += iteration_training_time
+
+            # Measure testing time
+            testing_start = time.time()
             predicted_label = self.classifier.test(filtered_test_features)
+            testing_end = time.time()
+            iteration_testing_time = testing_end - testing_start
+            total_testing_time += iteration_testing_time
 
             actual_label = test_instance[1]
             is_correct = predicted_label == actual_label
+
+            iteration_end = time.time()
+            iteration_total_time = iteration_end - iteration_start
+
             print(
-                f"Iteration {i + 1}/{total_instances}: Predicted = {predicted_label}, "
-                f"Actual = {actual_label}, Correct = {is_correct}"
+                f"Iteration {i + 1}/{total_instances}: "
+                f"Training Time = {iteration_training_time:.8f}s, "
+                f"Testing Time = {iteration_testing_time:.8f}s, "
+                f"Total Iteration Time = {iteration_total_time:.8f}s, "
+                f"Predicted = {predicted_label}, Actual = {actual_label}, Correct = {is_correct}"
             )
 
             if is_correct:
                 correct_predictions += 1
 
         end_time = time.time()
-        print(correct_predictions, total_instances)
         accuracy = correct_predictions / total_instances
         elapsed_time = end_time - start_time
-        print(f"Validation completed in {elapsed_time:.2f} seconds.")
+
+        print(f"\nValidation completed in {elapsed_time:.4f} seconds.")
+        print(f"Total training time: {total_training_time:.4f} seconds.")
+        print(f"Total testing time: {total_testing_time:.4f} seconds.")
+        print(f"Overall accuracy: {accuracy:.4f}")
         return accuracy
 
 
@@ -83,7 +109,6 @@ def load_and_normalize_data(file_path):
     normalized_data = [(list(normalized_features[i]), labels[i]) for i in range(len(labels))]
     return normalized_data
 
-
 def load_data_without_normalization(file_path):
     data = []
 
@@ -95,7 +120,6 @@ def load_data_without_normalization(file_path):
             data.append((features, class_label))
 
     return data
-
 
 def main():
     dataset_choice = input("Choose a dataset: Type '1' for small or '2' for large: ").strip()
