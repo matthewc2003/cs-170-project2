@@ -34,7 +34,7 @@ class Validator:
 
         start_time = time.time()
         for i in range(total_instances):
-            iteration_start = time.time()  # Start time for the iteration
+            iteration_start = time.time()
 
             test_instance = dataset[i]
             training_data = [dataset[j] for j in range(total_instances) if j != i]
@@ -48,14 +48,12 @@ class Validator:
                 filtered_training_data = training_data
                 filtered_test_features = test_instance[0]
 
-            # Measure training time
             training_start = time.time()
             self.classifier.train(filtered_training_data)
             training_end = time.time()
             iteration_training_time = training_end - training_start
             total_training_time += iteration_training_time
 
-            # Measure testing time
             testing_start = time.time()
             predicted_label = self.classifier.test(filtered_test_features)
             testing_end = time.time()
