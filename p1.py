@@ -18,7 +18,7 @@ class Algorithm:
     @staticmethod
     def evaluate(state: List[int]) -> float:
         return random.random()
-    
+
     def get_initial_state(self) -> List[int]:
         raise NotImplementedError
 
@@ -85,13 +85,13 @@ def main():
         if len(options) == 1 and not options[0]:
             index = 0
             print(f"Using no features and \"random\" evaluation, I get an accuracy of {evals[0] * 100:.1f}%")
-        
+
         else:
             index = max(range(len(options)), key=lambda x: evals[x])
-            
+
             for s, e in zip(options, evals):
                 print(f"    Using feature(s) {s} accuracy is {e * 100:.1f}%")
-            
+
             if len(options) > 1:
                 print(f"\nFeature set {options[index]} was best, accuracy is {evals[index] * 100:.1f}%")
 
